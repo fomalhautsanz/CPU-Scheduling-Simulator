@@ -166,4 +166,67 @@ class Scheduler {
         return gantt;
     }
 }
-
+public class CPUSchedulingSimulator {
+ 
+    public static void main(String[] args) {
+        // Sample processes for testing
+        List<Process> processes = new ArrayList<>();
+        processes.add(new Process("P0", 0, 4, 2));
+        processes.add(new Process("P1", 2, 3, 1));
+        processes.add(new Process("P2", 4, 2, 3));
+ 
+        // FCFS
+        List<GanttEntry> gantt1 = Scheduler.fcfs(processes);
+        printGantt("First-Come, First-Served (FCFS)", gantt1);
+ 
+        // SJF
+        for (Process p : processes) p.reset();
+        List<GanttEntry> gantt2 = Scheduler.sjf(processes);
+        printGantt("Shortest Job First (SJF)", gantt2);
+ 
+        // Round Robin
+        for (Process p : processes) p.reset();
+        List<GanttEntry> gantt3 = Scheduler.roundRobin(processes, 2);
+        printGantt("Round Robin (RR) - Quantum = 2", gantt3);
+    }
+ 
+   // Print sa Gantt chart
+ 
+    static void printGantt(String title, List<GanttEntry> gantt) {
+        System.out.println("\nAlgorithm: " + title);
+        System.out.println();
+ 
+        // Execution Order
+        System.out.println("Execution Order:");
+        StringBuilder order = new StringBuilder();
+        boolean first = true;
+        for (GanttEntry e : gantt) {
+            if (e.pid.equals("IDLE")) continue;
+            if (!first) order.append(" -> ");
+            order.append(e.pid);
+            first = false;
+        }
+        System.out.println(order);
+ 
+        // Gantt Chart Row: | P0 | P1 | P2 |
+        StringBuilder ganttRow = new StringBuilder();
+        for (GanttEntry e : gantt) {
+            ganttRow.append("| ").append(e.pid).append(" ");
+        }
+        ganttRow.append("|");
+        System.out.println(ganttRow);
+ 
+        // Time Markers below each cell
+        StringBuilder timeRow = new StringBuilder();
+        for (GanttEntry e : gantt) {
+            String t         = String.valueOf(e.start);
+            int    cellWidth = e.pid.length() + 3;
+            timeRow.append(t);
+            int pad = cellWidth - t.length();
+            if (pad > 0) timeRow.append(" ".repeat(pad));
+        }
+        timeRow.append(gantt.get(gantt.size() - 1).end);
+        System.out.println(timeRow);
+        System.out.println();
+    }
+}
